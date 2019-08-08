@@ -12,7 +12,7 @@ CVE = []
 i = 0
 #loop for reading links from input CSV file
 maven = []
-with open('/home/anurag/Projects/EV15.3.0/SnykContainer/ExtractedUrls/Mavenpackages.csv', 'r') as csvFile:
+with open('/home/anurag/Projects/EV15.3.0/SnykContainer/ExtractedUrls/inputfile.csv', 'r') as csvFile:
     reader = csv.reader(csvFile)
     for row in reader:
         list1.extend(row)
@@ -59,6 +59,6 @@ for l in range(len(list1)):
         sheet1.write(i+1, x, out[x])
 #Save the file, inform the user , how much file Parsed
 #Save the file, inform the user , how much file Parsed
-wb.save('Mavenpackages.xls')
+wb.save('Output.xls')
 print("Total Links Parsed : " + str(i+1))
 
