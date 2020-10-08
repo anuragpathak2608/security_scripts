@@ -1,0 +1,71 @@
+#!/usr/local/bin/python3
+
+import requests
+import csv
+import sys
+
+# Config settings
+server_ip = "SERVER_IP"
+API_key = "API_KEY"
+api_endpoint = '/api/v1/vulnerability/project/'
+prj_key = sys.argv[1]
+file_name = sys.argv[2]
+
+try:
+    #Get the JSON data of the project from API
+    app_url = server_ip + api_endpoint + prj_key
+    headers = {'Content-Type': 'application/json', 'X-API-Key': API_key}
+    request_sent = requests.get(app_url, headers=headers)
+    API_response = request_sent.status_code
+    response_data = request_sent.json()
+    #print(response_data)
+    print("DT API Response: ", request_sent.status_code)
+    if request_sent.status_code != 200:
+        print("Enable to fetch data from dependency tracker")
+except:
+    print("Oops!", sys.exc_info()[0], "occurred.")
+else:
+    #convert the json of vulnerabilites to the CSV
+
+    #open a CSV file for writing
+    data_file = open(file_name, 'w')
+
+    # create the csv writer object
+    csv_writer = csv.writer(data_file)
+
+    #Headers required in the CSV file
+    csv_headers = ["Component", "Current Version", "purl", "Vulnerability Summary",
+                  "Description", "Recomendation",  "severity", "vulnerable Versions",
+                    " patched Versions", "Source", "references"]
+    csv_writer.writerow(csv_headers)
+    vul_list = []
+    for x in response_data:
+        component = x['components'][0]['name']
+        version = x['components'][0]['version'],
+        purl = x['components'][0]['purl'],
+        title = x.get('title', "empty"),
+        desc = x.get('description', "empty"),
+        recmd = x.get('recommendation', "empty"),
+        sev = x.get('severity', "empty"),
+        vuln_vbl = x.get('vulnerableVersions', "empty"),
+        patch_ver = x.get('patchedVersions', "empty"),
+        src = x.get('source', "empty"),
+        ref = x.get('references', "empty")
+        #print(ref)
+        vul_list.append(component)
+        vul_list.append(version)
+        vul_list.append(purl)
+        vul_list.append(title)
+        vul_list.append(desc)
+        vul_list.append(recmd)
+        vul_list.append(sev)
+        vul_list.append(vuln_vbl)
+        vul_list.append(patch_ver)
+        vul_list.append(src)
+        vul_list.append(ref)
+        #print(vul_list)
+        csv_writer.writerow(vul_list)
+        vul_list.clear()
+        #print(vul_list)
+    data_file.close()
+print("Genrated CSV file successfully...")
